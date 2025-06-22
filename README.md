@@ -270,4 +270,148 @@ inv dueDateMustBeAfterBorrowDate:
 
 # 任务三
 
-![image-20250622180447730](image/image-20250622180447730.png)
+![image-20250622212543418](image/image-20250622212543418.png)
+
+
+
+最终生成文档链接，或者可查看项目中的pdf文件
+
+# 关于「图书管理系统」的系统设计文档
+
+## 项目概述
+
+> 图书管理系统（版本1.0）是一个用于处理图书借阅、归还以及图书上架和下架流程的简单管理系统。主要参与者包括「顾客」（可查询图书信息）和「图书管理员」（可上架新书）。核心功能涵盖顾客的图书信息查询操作，以及图书管理员的新书上架流程，旨在通过系统化管理提升图书资源的利用效率。
+
+## 用例图
+
+![img](https://yrrcj5q9w5.feishu.cn/space/api/box/stream/download/asynccode/?code=YTQ5YzQ4YzMxOGU0NTUxZTMzMWY4YzEzYzQ3YjQ5NjBfMFRkVFFwN3pxUUZDY0NEQ05xNDlaMHBPclRrVXB5cURfVG9rZW46Q2l5MGJSR2Nnb0FYbkZ4VnEzVWNBRlJablZiXzE3NTA1OTg2NDI6MTc1MDYwMjI0Ml9WNA)
+
+点击查看 Mermaid 源码
+
+```Plaintext
+%% 用例图：图书管理系统
+graph TD
+    subgraph 图书管理系统
+        actor1[顾客]
+        actor2[图书管理员]
+
+        usecase1(查询图书信息)
+        usecase2(上架新书)
+
+        actor1 --> usecase1
+        actor2 --> usecase2
+    end
+```
+
+## 时序图
+
+### 查询图书信息时序图
+
+**描述**: 顾客查询图书信息的流程。
+
+![img](https://yrrcj5q9w5.feishu.cn/space/api/box/stream/download/asynccode/?code=NGNkYmUxNGU3NGEyMWYxYTU2MDUxOTdkNmVhZTlkYmVfR0xBaXJjMk50bFFiT0hvYTFyeGR3YmZ5ZTRJMWlpTTBfVG9rZW46QVpaaWJKY2hnbzRNMG14Rmp3SWNzdENqblNmXzE3NTA1OTg2NDI6MTc1MDYwMjI0Ml9WNA)
+
+点击查看 Mermaid 源码
+
+```Plaintext
+sequenceDiagram
+    participant 顾客
+    participant 图书管理系统
+    顾客->>图书管理系统: 请求查询图书信息
+    图书管理系统-->>顾客: 返回图书信息
+```
+
+### 上架新书时序图
+
+**描述**: 图书管理员上架新书的流程。
+
+![img](https://yrrcj5q9w5.feishu.cn/space/api/box/stream/download/asynccode/?code=NDIzYWIyMjc0ZWFkNDU5ZDZlZDFmZTEzZTljNDVlNmZfY0lqOFljbzhVUWpmOFUzNUZkZHhRZ2VyTW9oNHR0TndfVG9rZW46TVlhcmJEZFQyb1hPVkx4RmZBamNPdWtUblViXzE3NTA1OTg2NDI6MTc1MDYwMjI0Ml9WNA)
+
+点击查看 Mermaid 源码
+
+```Plaintext
+sequenceDiagram
+    participant 图书管理员
+    participant 图书管理系统
+    图书管理员->>图书管理系统: 请求上架新书
+    图书管理系统-->>图书管理员: 确认新书信息
+    图书管理员->>图书管理系统: 提交新书信息
+    图书管理系统-->>图书管理员: 返回上架成功
+```
+
+## 类图
+
+![img](https://yrrcj5q9w5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGYwZmIzZjc1YzQ5M2NkOTk2YjdhNzFhOTc3MzRmMjFfTm5Qb3Q4YjRnREJUdmh2THVzVFByVGxWSU14Mkk4a0ZfVG9rZW46QnQ1aGJ0d2w1b0ZHV1d4bUVnSmNOc3FQbk40XzE3NTA1OTg2NDI6MTc1MDYwMjI0Ml9WNA)
+
+点击查看 Mermaid 源码
+
+```Plaintext
+classDiagram
+    class 顾客 {
+        +id: String
+        +name: String
+        +queryBookInfo(): BookInfo
+    }
+
+    class 图书管理员 {
+        +id: String
+        +name: String
+        +addNewBook(book: Book): Boolean
+    }
+
+    class 图书管理系统 {
+        +books: List<Book>
+        +queryBookInfo(query: String): BookInfo
+        +addNewBook(book: Book): Boolean
+    }
+
+    class Book {
+        +id: String
+        +title: String
+        +author: String
+        +status: String
+    }
+
+    class BookInfo {
+        +id: String
+        +title: String
+        +author: String
+        +status: String
+    }
+
+    class BookStatus {
+        <<enumeration>>
+        +available
+        +borrowed
+        +reserved
+    }
+
+    顾客 -- 图书管理系统 : "查询图书信息"
+    图书管理员 -- 图书管理系统 : "上架新书"
+    图书管理系统 *-- Book : "包含多个Book对象"
+    Book -- BookStatus : "状态"
+```
+
+## OCL 规则
+
+### 1. 图书状态有效性约束
+
+**上下文**: `Book` 类 **描述**: 确保图书状态只能是有效的预定义值 **规则**:
+
+```Plaintext
+inv: self.status = 'available' or self.status = 'borrowed' or self.status = 'reserved'
+```
+
+### 2. 上架新书唯一性约束
+
+**上下文**: `图书管理系统` 类的 `addNewBook` 操作 **描述**: 确保上架新书时图书ID在系统中唯一 **规则**:
+
+```Plaintext
+context 图书管理系统::addNewBook(book: Book): Boolean
+pre: not self.books->exists(b | b.id = book.id)
+post: result = true implies self.books->includes(book)
+```
+
+## 总结
+
+本设计文档完整覆盖了图书管理系统的核心设计要素，通过用例图明确了系统与参与者的交互边界，时序图详细描述了关键业务流程的执行步骤，类图定义了系统的静态结构和对象关系，OCL规则则从逻辑层面保障了系统的数据完整性和业务规则的正确性。各部分设计相互支撑，共同构建了一个功能清晰、结构合理、约束严谨的图书管理系统解决方案。
