@@ -274,7 +274,7 @@ inv dueDateMustBeAfterBorrowDate:
 
 
 
-最终生成文档链接，或者可查看项目中的pdf文件
+如果图片不可查看，可以查看生成的飞书文档：https://yrrcj5q9w5.feishu.cn/docx/SDBOd9uHxoe5SFxdlq9ctNUJnsb，或者可查看项目中的pdf文件
 
 # 关于「图书管理系统」的系统设计文档
 
